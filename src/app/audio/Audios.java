@@ -10,12 +10,17 @@ public class Audios {
 
     private static Clip clip;
 
-    public static void iniciarMusica(String path) throws Exception {
-        File audioFile = new File(path);
-        AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-        clip = AudioSystem.getClip();
-        clip.open(audioStream);
-        clip.start();
+    public static void iniciarMusica(String path) {
+        try {
+            File audioFile = new File(path);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void pararMusica() {

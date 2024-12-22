@@ -3,11 +3,10 @@ package app.screens;
 import app.audio.Audios;
 import app.clearS.Clear;
 import app.scanner.Scan;
-import pokemon.Pokemon;
 import treinador.Treinador;
 
 public class AppTrainer {
-    public static void trainer(Treinador trainer, Pokemon pikachu) throws Exception {
+    public static void trainer(Treinador trainer) {
         Audios.iniciarMusica("src/app/audio/music/trainer.wav");
         Audios.loopMusica();
 
@@ -15,7 +14,7 @@ public class AppTrainer {
             System.out.println(trainer.toString());
 
             System.out.println(
-                    "Opções do treinador: [1] nome, [2] Menu do Pokemons, [3] voltar");
+                    "Opções do treinador: [1] nome, [2] Menu dos Pokemons, [3] voltar");
             int choice = Scan.lerInt();
 
             switch (choice) {
@@ -24,7 +23,8 @@ public class AppTrainer {
                     break;
 
                 case 2:
-                    AppPokemon.appPok(trainer, pikachu);
+                    Clear.clear();
+                    AppPokemon.appPok(trainer);
                     break;
 
                 case 3:

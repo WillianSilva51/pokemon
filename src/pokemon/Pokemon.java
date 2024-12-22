@@ -23,6 +23,11 @@ public class Pokemon {
         this.nivel = nivel;
     }
 
+    public Pokemon(String nome) {
+        this(nome, "normal", Rand.aleatorio(100, 150), Rand.aleatorio(20, 25), Rand.aleatorio(25, 35),
+                Rand.aleatorio(20, 30), Rand.aleatorio(0, 10), 1);
+    }
+
     public Pokemon(String nome, int nivel, String tipo) {
         this(nome, tipo, Rand.aleatorio(100, 150), Rand.aleatorio(20, 25), Rand.aleatorio(25, 35),
                 Rand.aleatorio(20, 30), Rand.aleatorio(0, 10), nivel);
@@ -84,24 +89,12 @@ public class Pokemon {
         System.out.println(this.toString());
     }
 
-    public void mostrarPokemon() {
-        System.out.println("`;-.          ___,        \r\n" + //
-                "  `.`\\_...._/`.-\"`        \r\n" + //
-                "    \\        /      ,     \r\n" + //
-                "    /()   () \\    .' `-._ \r\n" + //
-                "   |)  .    ()\\  /   _.'  \r\n" + //
-                "   \\  -'-     ,; '. &lt;     \r\n" + //
-                "    ;.__     ,;|   &gt; \\    \r\n" + //
-                "   / ,    / ,  |.-'.-'    \r\n" + //
-                "  (_/    (_/ ,;|.&lt;`       \r\n" + //
-                "    \\    ,     ;-`        \r\n" + //
-                "     &gt;   \\    /           \r\n" + //
-                "    (_,-'`&gt; .'            \r\n" + //
-                "          (_,'             ");
-    }
-
     public String getNome() {
         return nome;
+    }
+
+    public int getNivel() {
+        return nivel;
     }
 
     @Override

@@ -1,29 +1,37 @@
 package treinador;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import app.audio.Audios;
 import app.clearS.Clear;
 import app.scanner.Scan;
-import map.Mapa;
+import pokebolas.GreatBall;
+import pokebolas.Masterball;
+import pokebolas.Pokebola;
+import pokebolas.Ultraball;
 import pokemon.Pokemon;
-import random.Rand;
 
 public class Treinador {
     private String nome;
     private int x, y;
     private ArrayList<Pokemon> lista = new ArrayList<>(6);
-    private int pokebolas = 5;
+    private ArrayList<Pokebola> pokebolas = new ArrayList<>(Collections.nCopies(3, new Pokebola()));
 
     public Treinador() {
-        this.nome = "Ash";
-        x = 3;
-        y = 3;
+        x = 1;
+        y = 1;
+
+        nome = "Ash";
     }
 
     public Treinador(String nome) {
-        x = 3;
-        y = 3;
+        pokebolas.add(new Masterball());
+        pokebolas.add(new GreatBall());
+        pokebolas.add(new Ultraball());
+
+        x = 1;
+        y = 1;
 
         this.nome = nome;
     }
@@ -94,58 +102,45 @@ public class Treinador {
         }
     }
 
-    public void moveChoice(Mapa mapinha) {
+    public boolean temPokebola() {
+        return pokebolas.isEmpty();
+    }
+
+    public Pokebola arremessarPokebola() {
+        if (temPokebola()) {
+            System.out.println("Você não tem pokebolas.");
+            return null;
+        }
+
         while (true) {
-            Clear.ClearScreen();
-            mapinha.mostrarMapa();
+            System.out.println("Você tem as seguintes pokebolas:");
+            System.out.println(listarPokebolas());
 
-            System.out.println(
-                    "Para qual direção quer se mover?\n [W] Cima\n [S] Baixo\n [D] Direita\n [A] Esquerda\n [C] Cancelar movimento");
+            System.out.println("Escolha uma pokebola para arremessar:");
+            int choice = Scan.lerInt();
 
-            String choice = Scan.lerString();
-
-            switch (choice.toLowerCase()) {
-                case "w":
-                    mapinha.moveUp(this);
-                    break;
-
-                case "s":
-                    mapinha.moveDown(this);
-                    break;
-
-                case "d":
-                    mapinha.moveRight(this);
-                    break;
-
-                case "a":
-                    mapinha.moveLeft(this);
-                    break;
-
-                case "c":
-                    System.out.println("Movimento cancelado");
-                    return;
-
-                default:
-                    System.out.println("Não existe essa opção.");
-                    break;
+            try {
+                return pokebolas.get(choice - 1);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Escolha um número válido.");
+                Clear.ClearScreen();
             }
         }
     }
 
-    public void capturar(Pokemon p) throws Exception {
-        if (pokebolas == 0) {
-            System.out.println("Você não tem pokebolas.");
-            return;
-        }
+    public boolean capturar(Pokemon p, Pokebola pokebola) {
+        pokebolas.remove(pokebola);
 
-        pokebolas--;
-
-        if (Rand.aleatorioB()) {
+        if (pokebola.capturar(p)) {
             Audios.pararMusica();
             Audios.iniciarMusica("src/app/audio/soundEffects/capturado.wav");
             System.out.println("Pokemon capturado!");
 
-            Thread.sleep(3000);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             Audios.iniciarMusica("src/app/audio/music/trainer.wav");
 
@@ -158,21 +153,26 @@ public class Treinador {
 
                 if (choice.equalsIgnoreCase("s")) {
                     trocarPokemon(p);
+                    return true;
 
                 } else {
                     System.out.println("Pokemon não trocado.");
+                    return true;
                 }
             }
 
             else {
                 lista.add(p);
                 lista.size();
+                return true;
             }
         }
 
         else {
             System.out.println("Não conseguiu capturar");
         }
+
+        return false;
     }
 
     public void trocarPokemon(Pokemon p) {
@@ -220,7 +220,8 @@ public class Treinador {
         StringBuilder sb = new StringBuilder();
 
         for (Pokemon p : lista) {
-            sb.append(lista.indexOf(p) + 1).append(": ").append(p.toString2()).append("\n");
+            sb.append("----------------------\n").append(lista.indexOf(p) + 1).append(": ").append(p.toString2())
+                    .append("\n");
         }
 
         return sb.toString();
@@ -278,8 +279,8 @@ public class Treinador {
             return;
         }
 
+        System.out.print("\n" + listar());
         System.out.println("Escolha o número do pokemon que deseja curar:");
-        System.out.println(listar());
 
         try {
             int index = Scan.lerInt();
@@ -307,10 +308,20 @@ public class Treinador {
     public String toString() {
         if (lista.isEmpty()) {
             return "Treinador: " + nome +
-                    "\nPokemons: " + "[Você não tem pokemons]" + "\nQuantidade de Pokemons: " + pokebolas;
+                    "\nPokemons: " + "[Você não tem pokemons]" + "\nQuantidade de Pokemons: " + pokebolas.size();
         }
 
         return "Treinador: " + nome +
-                "\nQuantidade de Pokemons: " + lista.size() + "\nQuantidade de Pokebolas: " + pokebolas;
+                "\nQuantidade de Pokemons: " + lista.size() + "\nQuantidade de Pokebolas: " + pokebolas.size();
+    }
+
+    private String listarPokebolas() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Pokebola p : pokebolas) {
+            sb.append(pokebolas.indexOf(p) + 1).append(": ").append(p.toString()).append("\n");
+        }
+
+        return sb.toString();
     }
 }
