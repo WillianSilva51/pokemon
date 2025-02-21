@@ -6,17 +6,18 @@ import java.util.Collections;
 import app.audio.Audios;
 import app.clearS.Clear;
 import app.scanner.Scan;
-import pokebolas.GreatBall;
-import pokebolas.Masterball;
-import pokebolas.Pokebola;
-import pokebolas.Ultraball;
+import pokebolas.*;
+import pokebolas.afetaPokemon.*;
+import pokebolas.afetaCaptura.*;
 import pokemon.Pokemon;
+import treinador.pokedex.Pokedex;
+import pokemon.EspeciePokemon;
 
 public class Treinador {
     private String nome;
     private int x, y;
-    private ArrayList<Pokemon> lista = new ArrayList<>(6);
     private ArrayList<Pokebola> pokebolas = new ArrayList<>(Collections.nCopies(3, new Pokebola()));
+    private Pokedex pokedex = new Pokedex();
 
     public Treinador() {
         x = 1;
@@ -25,10 +26,15 @@ public class Treinador {
         nome = "Ash";
     }
 
-    public Treinador(String nome) {
+    public Treinador(String nome, Pokedex pokedex) {
         pokebolas.add(new Masterball());
         pokebolas.add(new GreatBall());
         pokebolas.add(new Ultraball());
+        pokebolas.add(new HealBall());
+        pokebolas.add(new FriendBall());
+        pokebolas.add(new HeavyBall());
+        pokebolas.add(new FastBall());
+        pokebolas.sort(Pokebola::compareTo);
 
         x = 1;
         y = 1;
@@ -55,20 +61,43 @@ public class Treinador {
     public void pokemonInicial() {
         System.out.println("Olá, " + nome + "! Bem-vindo ao mundo dos pokemons!");
         System.out.println("Escolha o seu pokemon inicial: [1] Bulbassauro, [2] Charmander, [3] Squirtle ");
+
+        EspeciePokemon base = EspeciePokemon.BULBASAUR;
+        Pokemon bulbasaur = new Pokemon(base.ordinal(), base.getNome(), base.getHpBase(),
+                base.getAtaqueBase(),
+                base.getDefesaBase(),
+                base.getVelocidadeBase(), base.getAmizadeBase(), base.getPeso(), base.getTaxaDeCaptura());
+
+        EspeciePokemon base2 = EspeciePokemon.CHARMANDER;
+        Pokemon charmander = new Pokemon(base2.ordinal(), base2.getNome(), base2.getHpBase(),
+                base2.getAtaqueBase(),
+                base2.getDefesaBase(),
+                base2.getVelocidadeBase(), base2.getAmizadeBase(), base2.getPeso(), base2.getTaxaDeCaptura());
+
+        EspeciePokemon base3 = EspeciePokemon.SQUIRTLE;
+        Pokemon squirtle = new Pokemon(base3.ordinal(), base3.getNome(), base3.getHpBase(),
+                base3.getAtaqueBase(),
+                base3.getDefesaBase(),
+                base3.getVelocidadeBase(), base3.getAmizadeBase(), base3.getPeso(), base3.getTaxaDeCaptura());
+
+        pokedex.registrarEncontro(bulbasaur);
+        pokedex.registrarEncontro(charmander);
+        pokedex.registrarEncontro(squirtle);
+
         while (true) {
             String choice = Scan.lerString();
 
             switch (choice) {
                 case "1":
-                    lista.add(new Pokemon("Bulbassauro", 1, "Grama"));
+                    pokedex.registrarCaptura(bulbasaur);
                     return;
 
                 case "2":
-                    lista.add(new Pokemon("Charmander", 1, "Fogo"));
+                    pokedex.registrarCaptura(charmander);
                     return;
 
                 case "3":
-                    lista.add(new Pokemon("Squirtle", 1, "Água"));
+                    pokedex.registrarCaptura(squirtle);
                     return;
 
                 default:
@@ -102,8 +131,20 @@ public class Treinador {
         }
     }
 
+    public Pokedex getPokedex() {
+        return pokedex;
+    }
+
+    private boolean temPokemon() {
+        return !pokedex.listarCapturados().isEmpty();
+    }
+
     public boolean temPokebola() {
         return pokebolas.isEmpty();
+    }
+
+    public void mostrarPokedex() {
+        System.out.println("Pokedex:" + pokedex.toString());
     }
 
     public Pokebola arremessarPokebola() {
@@ -144,28 +185,10 @@ public class Treinador {
 
             Audios.iniciarMusica("src/app/audio/music/trainer.wav");
 
-            if (lista.size() >= 6) {
-                System.out.println("Sua equipe está cheia.");
+            pokedex.registrarCaptura(p);
+            pokedex.registrarEncontro(p);
 
-                System.out.println("Deseja trocar um pokemon? [S] ou [N]");
-
-                String choice = Scan.lerString();
-
-                if (choice.equalsIgnoreCase("s")) {
-                    trocarPokemon(p);
-                    return true;
-
-                } else {
-                    System.out.println("Pokemon não trocado.");
-                    return true;
-                }
-            }
-
-            else {
-                lista.add(p);
-                lista.size();
-                return true;
-            }
+            return true;
         }
 
         else {
@@ -175,144 +198,16 @@ public class Treinador {
         return false;
     }
 
-    public void trocarPokemon(Pokemon p) {
-        removerPokemon();
-
-        lista.add(p);
-    }
-
-    public void removerPokemon() {
-        if (lista.isEmpty()) {
-            System.out.println("Você não tem pokemons para remover ou trocar.");
-            return;
-        }
-
-        while (true) {
-            try {
-                System.out.println(
-                        "Você tem certeza que deseja remover ou trocar algum dos seus pokemons? (Após isso não poderá mais usá-lo) [S] ou [N]");
-                String choice = Scan.lerString();
-
-                if (choice.equalsIgnoreCase("s")) {
-                    System.out.println(listar());
-                    System.out.println("Escolha o número do pokemon que deseja remover:");
-                    lista.remove(Scan.lerInt() - 1);
-                    System.out.println("Pokemon removido");
-                    return;
-                }
-
-                else {
-                    System.out.println("Pokemon não removido ou trocado.");
-                    return;
-                }
-
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("Escolha um número válido.");
-            }
-        }
-    }
-
-    public String listar() {
-        if (lista.isEmpty()) {
-            return "Você não tem pokemons";
-        }
-
-        StringBuilder sb = new StringBuilder();
-
-        for (Pokemon p : lista) {
-            sb.append("----------------------\n").append(lista.indexOf(p) + 1).append(": ").append(p.toString2())
-                    .append("\n");
-        }
-
-        return sb.toString();
-    }
-
-    public String listar(int index) {
-        if (lista.isEmpty()) {
-            return "Você não tem pokemons";
-        }
-
-        try {
-            return lista.get(index - 1).toString();
-        } catch (IndexOutOfBoundsException e) {
-            return "Escolha um número válido.";
-        }
-    }
-
-    public void curarPokemons() {
-        if (lista.isEmpty()) {
-            System.out.println("Você não tem pokemons para curar.");
-            return;
-        }
-
-        System.out.println("Escolha uma opção [1] curar todos, [2] curar um pokemon específico ou [3] cancelar");
-        int choice = Scan.lerInt();
-
-        switch (choice) {
-            case 1:
-                System.out.println("Curando seus pokemons...");
-
-                for (Pokemon p : lista) {
-                    p.curar();
-                }
-
-                System.out.println("Todos os seus pokemons foram curados.");
-                break;
-
-            case 2:
-                curarPokemonEspecifico();
-                break;
-
-            case 3:
-                System.out.println("Cancelando...");
-                return;
-
-            default:
-                System.out.println("Opção inválida.");
-                break;
-        }
-    }
-
-    public void curarPokemonEspecifico() {
-        if (lista.isEmpty()) {
-            System.out.println("Você não tem pokemons para curar.");
-            return;
-        }
-
-        System.out.print("\n" + listar());
-        System.out.println("Escolha o número do pokemon que deseja curar:");
-
-        try {
-            int index = Scan.lerInt();
-            Pokemon p = lista.get(index - 1);
-            p.curar();
-            System.out.println(p.getNome() + " foi curado.");
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("Escolha um número válido.");
-        }
-    }
-
-    public void mostrarPokemons() {
-        if (lista.isEmpty()) {
-            System.out.println("Você não tem pokemons.");
-            return;
-        }
-
-        System.out.println("Seus pokemons:");
-        for (Pokemon p : lista) {
-            System.out.println(p.toString2());
-        }
-    }
-
     @Override
     public String toString() {
-        if (lista.isEmpty()) {
+        if (!temPokemon()) {
             return "Treinador: " + nome +
                     "\nPokemons: " + "[Você não tem pokemons]" + "\nQuantidade de Pokemons: " + pokebolas.size();
         }
 
         return "Treinador: " + nome +
-                "\nQuantidade de Pokemons: " + lista.size() + "\nQuantidade de Pokebolas: " + pokebolas.size();
+                "\nQuantidade de Pokemons: " + pokedex.listarCapturados().size() + "\nQuantidade de Pokebolas: "
+                + pokebolas.size();
     }
 
     private String listarPokebolas() {

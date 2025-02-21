@@ -2,39 +2,75 @@ package pokemon;
 
 import random.Rand;
 
-public class Pokemon {
+public class Pokemon implements Comparable<Pokemon> {
     private String nome;
-    private String tipo;
-    private int vida;
-    private int atk;
-    private int def;
+    private int especie;
+    private int hpBase;
+    private int hpAtual;
+    private int hpMax;
+    private int taxaDeCaptura;
+    private double peso;
+    private int ataqueBase;
+    private int defesaBase;
     private int velocidade;
     private int experiencia;
     private int nivel;
+    private int amizade;
 
-    public Pokemon(String nome, String tipo, int vida, int atk, int def, int velocidade, int experiencia, int nivel) {
+    public Pokemon(int especie, String nome, int hpBase, int ataque, int defesa, int velocidade, int amizade,
+            double peso, int taxaDeCaptura) {
+        this.especie = especie;
         this.nome = nome;
-        this.tipo = tipo;
-        this.vida = vida;
-        this.atk = atk;
-        this.def = def;
+        this.hpBase = hpBase;
+        this.ataqueBase = ataque;
+        this.defesaBase = defesa;
         this.velocidade = velocidade;
-        this.experiencia = experiencia;
-        this.nivel = nivel;
+        this.amizade = amizade;
+        this.peso = peso;
+        this.taxaDeCaptura = taxaDeCaptura;
+        this.nivel = 1;
+        this.hpMax = calcularHP(nivel);
+        this.hpAtual = hpMax;
     }
 
-    public Pokemon(String nome) {
-        this(nome, "normal", Rand.aleatorio(100, 150), Rand.aleatorio(20, 25), Rand.aleatorio(25, 35),
-                Rand.aleatorio(20, 30), Rand.aleatorio(0, 10), 1);
+    public String getNome() {
+        return nome;
     }
 
-    public Pokemon(String nome, int nivel, String tipo) {
-        this(nome, tipo, Rand.aleatorio(100, 150), Rand.aleatorio(20, 25), Rand.aleatorio(25, 35),
-                Rand.aleatorio(20, 30), Rand.aleatorio(0, 10), nivel);
+    public int getNivel() {
+        return nivel;
     }
 
-    public Pokemon() {
-        this("pikachu", "eletrico", Rand.aleatorio(100, 150), 24, 16, 27, 2, 4);
+    public int getHpAtual() {
+        return hpAtual;
+    }
+
+    public int getHpMax() {
+        return hpMax;
+    }
+
+    public int getTaxaDeCaptura() {
+        return taxaDeCaptura;
+    }
+
+    public void setTaxaCaptura(int taxa) {
+        taxaDeCaptura = taxa;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+
+    public int getVelocidade() {
+        return velocidade;
+    }
+
+    public int setAmizade(int amizade) {
+        return this.amizade = amizade;
+    }
+
+    private int calcularHP(int nivel) {
+        return ((2 * hpBase * nivel) / 100) + nivel + 10;
     }
 
     public String falar() {
@@ -42,7 +78,15 @@ public class Pokemon {
     }
 
     public void curar() {
-        vida += Rand.aleatorio(1, 100);
+        curar(Rand.aleatorio(1, hpMax));
+    }
+
+    public void curar(int quantidade) {
+        if (hpAtual + quantidade > hpMax) {
+            hpAtual = hpMax;
+        } else {
+            hpAtual += quantidade;
+        }
     }
 
     public void atacar(int movimento, Pokemon alvo) {
@@ -55,17 +99,17 @@ public class Pokemon {
     }
 
     boolean taVivo() {
-        return this.vida > 0;
+        return this.hpAtual > 0;
     }
 
     public void ganharExperiencia(int pontos) {
-        this.experiencia += pontos;
-        if (this.experiencia >= 10 * nivel) {
-            this.nivel++;
-            this.experiencia = this.experiencia - 10 * nivel;
+        experiencia += pontos;
+        if (experiencia >= 10 * nivel) {
+            nivel++;
+            experiencia = experiencia - 10 * nivel;
 
-            if (this.experiencia < 0) {
-                this.experiencia = 0;
+            if (experiencia < 0) {
+                experiencia = 0;
             }
 
             System.out.println(nome + " subiu para o nível " + this.nivel + "!");
@@ -75,32 +119,27 @@ public class Pokemon {
     }
 
     public void receberDano(int dano) {
-        this.vida -= dano;
+        hpAtual -= dano;
 
         if (!taVivo()) {
-            this.vida = 0;
+            hpAtual = 0;
             System.out.println(nome + " morreu!");
         }
 
-        System.out.println(nome + " recebeu " + dano + " de dano e agora tem " + this.vida + " de vida.");
+        System.out.println(nome + " recebeu " + dano + " de dano e agora tem " + this.hpAtual + " de hpAtual.");
     }
 
     public void mostrarStatus() {
-        System.out.println(this.toString());
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public int getNivel() {
-        return nivel;
+        System.out.println(toString());
     }
 
     @Override
     public String toString() {
-        return "Nome: " + nome + "\n" + "Tipo: " + tipo + "\n" + "Vida: " + vida + "\n" + "Ataque: " + atk + "\n"
-                + "Defesa: " + def + "\n" + "Velocidade: " + velocidade + "\n" + "Experiência: " + experiencia + "\n"
+        return "Nome: " + nome + "\n" + "Especie: " + especie + "\n" + "Vida: " + hpAtual + "\n" + "Ataque: "
+                + ataqueBase
+                + "\n"
+                + "Defesa: " + defesaBase + "\n" + "Velocidade: " + velocidade + "\n" + "Peso: " + peso + "\n"
+                + "Experiência: " + experiencia + "\n" + "Amizade: " + amizade + "\n"
                 + "Nível: " + nivel;
     }
 
@@ -108,4 +147,8 @@ public class Pokemon {
         return nome + " level: " + nivel;
     }
 
+    @Override
+    public int compareTo(Pokemon o) {
+        return Integer.compare(especie, especie);
+    }
 }

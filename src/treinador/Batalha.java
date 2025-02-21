@@ -6,12 +6,12 @@ import pokebolas.Pokebola;
 import pokemon.Pokemon;
 
 public class Batalha {
-  private Treinador treinador;
+  private Treinador trainer;
   private Pokemon pokemon;
   private boolean terminou = false;
 
-  public Batalha(Treinador treinador, Pokemon pokemon) {
-    this.treinador = treinador;
+  public Batalha(Treinador trainer, Pokemon pokemon) {
+    this.trainer = trainer;
     this.pokemon = pokemon;
   }
 
@@ -36,7 +36,7 @@ public class Batalha {
 
     switch (escolha) {
       case "1":
-        Pokebola pokebola = treinador.arremessarPokebola();
+        Pokebola pokebola = trainer.arremessarPokebola();
 
         if (pokebola != null) {
           if (tentarCaptura(pokebola)) {
@@ -45,6 +45,8 @@ public class Batalha {
 
           else if (Math.random() > 0.5) {
             System.out.println("O " + pokemon.getNome() + " escapou!");
+            trainer.getPokedex().registrarEncontro(pokemon);
+
             terminou = true;
           }
         }
@@ -56,6 +58,8 @@ public class Batalha {
         break;
       case "2":
         System.out.println("Você fugiu da batalha!");
+        trainer.getPokedex().registrarEncontro(pokemon);
+        
         terminou = true;
         break;
 
@@ -68,6 +72,6 @@ public class Batalha {
   private boolean tentarCaptura(Pokebola pokebola) {
     System.out.println("Tentando capturar " + pokemon.getNome() + " com " + pokebola.getClass().getSimpleName());
 
-    return treinador.capturar(pokemon, pokebola);
+    return trainer.capturar(pokemon, pokebola);
   }
 }

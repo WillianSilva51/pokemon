@@ -17,16 +17,20 @@ public class Mapa {
     public Mapa() {
         mapinha = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        inicializarMapa();
+    }
+
+    private void inicializarMapa() {
+        for (int i = 0; i < 9; i++) {
             ArrayList<String> row = new ArrayList<>();
-            for (int j = 0; j < 10; j++) {
-                if (i == 0 || i == 9) {
+            for (int j = 0; j < 9; j++) {
+                if (i == 0 || i == 8) {
                     row.add("~");
-                } else if (j == 0 || j == 9) {
+                } else if (j == 0 || j == 8) {
                     row.add("|");
                 } else {
-                    if (Math.random() < 0.4) {
-                        row.add("w");
+                    if (Math.random() < 0.5) {
+                        row.add("w"); 
                     } else {
                         row.add("-");
                     }
@@ -183,9 +187,10 @@ public class Mapa {
         }
     }
 
+    // \u001B[0m \u001B[32m
+
     @Override
     public String toString() {
         return "Mapa:\n" + mapinha;
     }
-
 }

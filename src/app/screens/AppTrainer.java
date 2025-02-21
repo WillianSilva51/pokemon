@@ -14,7 +14,7 @@ public class AppTrainer {
             System.out.println(trainer.toString());
 
             System.out.println(
-                    "Opções do treinador: [1] nome, [2] Menu dos Pokemons, [3] voltar");
+                    "Opções do treinador: [1] nome, [2] Pokedex, [3] Voltar");
             int choice = Scan.lerInt();
 
             switch (choice) {
@@ -24,7 +24,7 @@ public class AppTrainer {
 
                 case 2:
                     Clear.clear();
-                    AppPokemon.appPok(trainer);
+                    AppPokedex.appPok(trainer);
                     break;
 
                 case 3:

@@ -6,6 +6,7 @@ import app.scanner.Scan;
 import app.screens.AppTrainer;
 import map.Mapa;
 import treinador.Treinador;
+import treinador.pokedex.Pokedex;
 
 public class App {
 
@@ -32,7 +33,7 @@ public class App {
             Thread.sleep(450);
         }
 
-        Treinador trainer = new Treinador(AppTrainer.iniciarTreinador());
+        Treinador trainer = new Treinador(AppTrainer.iniciarTreinador(), new Pokedex());
 
         trainer.pokemonInicial();
 
